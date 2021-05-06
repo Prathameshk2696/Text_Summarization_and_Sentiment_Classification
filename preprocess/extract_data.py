@@ -5,13 +5,13 @@ Created on Wed May  5 19:31:36 2021
 @author: Prthamesh
 """
 
-path = r'F:\EDUCATION\MS\3_Spring_2021\Natural_Language_Processing\Project\Data'
+path = r'..\Data'
 
 f_text = open(path + r'\text.txt','w')
 f_summary = open(path + r'\summary.txt','w')
 f_label = open(path + r'\label.txt','w')
 
-f = open(r'F:\EDUCATION\MS\3_Spring_2021\Natural_Language_Processing\Project\Data\Toys_&_Games\Toys_&_Games.txt')
+f = open(path + r"\Toys_&_Games\Toys_&_Games.txt")
 
 text_count = summary_count = label_count = 0
 

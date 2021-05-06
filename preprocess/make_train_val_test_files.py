@@ -5,7 +5,7 @@ Created on Wed May  5 19:45:05 2021
 @author: Prthamesh
 """
 
-path = r'F:\EDUCATION\MS\3_Spring_2021\Natural_Language_Processing\Project\Data'
+path = r'..\Data'
 
 f_text = open(path + r'\text.txt','r')
 f_summary = open(path + r'\summary.txt','r')

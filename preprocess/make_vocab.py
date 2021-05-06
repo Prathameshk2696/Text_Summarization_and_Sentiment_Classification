@@ -20,7 +20,6 @@ BOS_WORD = '<s>'
 EOS_WORD = '</s>'
 
 class Dict:
-    
     def __init__(self,special_words_list = None,lower = True):
         self.lower = lower # flag to indicate if words should be made lowercase
         self.index_to_word_dict = {} # dict that maps index to word
@@ -305,85 +304,85 @@ def make_data(source_filename,target_filename,label_filename,source_Dict,target_
             'length' : sizes
         }
 
+if __name__ == '__main__':
+
+    dicts = {}
     
-dicts = {}
-
-path = r'F:\EDUCATION\MS\3_Spring_2021\Natural_Language_Processing\Project\Data'
-
-# filenames for reading train data - text, summary and labels
-train_src_filename = path + r'\train_val_test_data\train\text_train.txt'
-train_tgt_filename = path + r'\train_val_test_data\train\summary_train.txt'
-train_label_filename = path + r'\train_val_test_data\train\label_train.txt'
-
-# filenames for reading val data - text, summary and labels
-val_src_filename = path + r'\train_val_test_data\val\text_val.txt'
-val_tgt_filename = path + r'\train_val_test_data\val\summary_val.txt'
-val_label_filename = path + r'\train_val_test_data\val\label_val.txt'
-
-# filenames for reading test data - text, summary and labels
-test_src_filename = path + r'\train_val_test_data\test\text_test.txt'
-test_tgt_filename = path + r'\train_val_test_data\test\summary_test.txt'
-test_label_filename = path + r'\train_val_test_data\test\label_test.txt'
-
-# filenames for writing train index data - text, summary and labels
-train_src_index_filename = path + r'\train_val_test_index_data\train\text_train.txt'
-train_tgt_index_filename = path + r'\train_val_test_index_data\train\summary_train.txt'
-train_label_index_filename = path + r'\train_val_test_index_data\train\label_train.txt'
-
-# filenames for writing val index data - text, summary and labels
-val_src_index_filename = path + r'\train_val_test_index_data\val\text_val.txt'
-val_tgt_index_filename = path + r'\train_val_test_index_data\val\summary_val.txt'
-val_label_index_filename = path + r'\train_val_test_index_data\val\label_val.txt'
-
-# filenames for writing test index data - text, summary and labels
-test_src_index_filename = path + r'\train_val_test_index_data\test\text_test.txt'
-test_tgt_index_filename = path + r'\train_val_test_index_data\test\summary_test.txt'
-test_label_index_filename = path + r'\train_val_test_index_data\test\label_test.txt'
-
-# construct vocabulary
-dicts['src'] = dicts['tgt'] = Dict(special_words_list = [PAD_WORD, UNK_WORD, BOS_WORD, EOS_WORD])
-
-dicts['src'] = make_vocabulary(filename = train_src_filename, 
-                           trunc_length = 0, 
-                           filter_length = 0, 
-                           vocab = dicts['src'], 
-                           size = 0)
-
-dicts['src'] = dicts['tgt'] = make_vocabulary(filename = train_tgt_filename, 
-                                          trunc_length = 0, 
-                                          filter_length = 0,
-                                          vocab = dicts['src'], 
-                                          size = 50_000)
-
-src_filter_length = src_trunc_length = src_least_length = 0
-
-tgt_filter_length = tgt_trunc_length = tgt_least_length = 0
-
-print('Preparing training ...')
-train = make_data(train_src_filename, train_tgt_filename, train_label_filename, 
-                  dicts['src'], dicts['tgt'], 
-                  train_src_index_filename, train_tgt_index_filename, train_label_index_filename)
-
-print('Preparing validation ...')
-valid = make_data(val_src_filename, val_tgt_filename, val_label_filename, 
-                  dicts['src'], dicts['tgt'], 
-                  val_src_index_filename, val_tgt_index_filename, val_label_index_filename)
-
-print('Preparing test ...')
-test = make_data(test_src_filename, test_tgt_filename, test_label_filename, 
-                 dicts['src'], dicts['tgt'], 
-                 test_src_index_filename, test_tgt_index_filename, test_label_index_filename)
-
-src_dict_filename = path + r'\src_dict.txt'
-print('Saving source vocabulary to \'' + src_dict_filename + '\'...')
-dicts['src'].writeFile(src_dict_filename)
-
-tgt_dict_filename = path + r'\tgt_dict.txt'
-print('Saving source vocabulary to \'' + tgt_dict_filename + '\'...')
-dicts['tgt'].writeFile(tgt_dict_filename)
-
-datas = {'train': train, 'valid': valid,
-         'test': test, 'dict': dicts}
-
-pickle.dump(datas, open(path + r'\data.pkl', 'wb'))
-
+    path = r'..\Data'
+    
+    # filenames for reading train data - text, summary and labels
+    train_src_filename = path + r'\train_val_test_data\train\text_train.txt'
+    train_tgt_filename = path + r'\train_val_test_data\train\summary_train.txt'
+    train_label_filename = path + r'\train_val_test_data\train\label_train.txt'
+    
+    # filenames for reading val data - text, summary and labels
+    val_src_filename = path + r'\train_val_test_data\val\text_val.txt'
+    val_tgt_filename = path + r'\train_val_test_data\val\summary_val.txt'
+    val_label_filename = path + r'\train_val_test_data\val\label_val.txt'
+    
+    # filenames for reading test data - text, summary and labels
+    test_src_filename = path + r'\train_val_test_data\test\text_test.txt'
+    test_tgt_filename = path + r'\train_val_test_data\test\summary_test.txt'
+    test_label_filename = path + r'\train_val_test_data\test\label_test.txt'
+    
+    # filenames for writing train index data - text, summary and labels
+    train_src_index_filename = path + r'\train_val_test_index_data\train\text_train.txt'
+    train_tgt_index_filename = path + r'\train_val_test_index_data\train\summary_train.txt'
+    train_label_index_filename = path + r'\train_val_test_index_data\train\label_train.txt'
+    
+    # filenames for writing val index data - text, summary and labels
+    val_src_index_filename = path + r'\train_val_test_index_data\val\text_val.txt'
+    val_tgt_index_filename = path + r'\train_val_test_index_data\val\summary_val.txt'
+    val_label_index_filename = path + r'\train_val_test_index_data\val\label_val.txt'
+    
+    # filenames for writing test index data - text, summary and labels
+    test_src_index_filename = path + r'\train_val_test_index_data\test\text_test.txt'
+    test_tgt_index_filename = path + r'\train_val_test_index_data\test\summary_test.txt'
+    test_label_index_filename = path + r'\train_val_test_index_data\test\label_test.txt'
+    
+    # construct vocabulary
+    dicts['src'] = dicts['tgt'] = Dict(special_words_list = [PAD_WORD, UNK_WORD, BOS_WORD, EOS_WORD])
+    
+    dicts['src'] = make_vocabulary(filename = train_src_filename, 
+                               trunc_length = 0, 
+                               filter_length = 0, 
+                               vocab = dicts['src'], 
+                               size = 0)
+    
+    dicts['src'] = dicts['tgt'] = make_vocabulary(filename = train_tgt_filename, 
+                                              trunc_length = 0, 
+                                              filter_length = 0,
+                                              vocab = dicts['src'], 
+                                              size = 50_000)
+    
+    src_filter_length = src_trunc_length = src_least_length = 0
+    
+    tgt_filter_length = tgt_trunc_length = tgt_least_length = 0
+    
+    print('Preparing training ...')
+    train = make_data(train_src_filename, train_tgt_filename, train_label_filename, 
+                      dicts['src'], dicts['tgt'], 
+                      train_src_index_filename, train_tgt_index_filename, train_label_index_filename)
+    
+    print('Preparing validation ...')
+    valid = make_data(val_src_filename, val_tgt_filename, val_label_filename, 
+                      dicts['src'], dicts['tgt'], 
+                      val_src_index_filename, val_tgt_index_filename, val_label_index_filename)
+    
+    print('Preparing test ...')
+    test = make_data(test_src_filename, test_tgt_filename, test_label_filename, 
+                     dicts['src'], dicts['tgt'], 
+                     test_src_index_filename, test_tgt_index_filename, test_label_index_filename)
+    
+    src_dict_filename = path + r'\src_dict.txt'
+    print('Saving source vocabulary to \'' + src_dict_filename + '\'...')
+    dicts['src'].writeFile(src_dict_filename)
+    
+    tgt_dict_filename = path + r'\tgt_dict.txt'
+    print('Saving source vocabulary to \'' + tgt_dict_filename + '\'...')
+    dicts['tgt'].writeFile(tgt_dict_filename)
+    
+    datas = {'train': train, 'valid': valid,
+             'test': test, 'dict': dicts}
+    
+    pickle.dump(datas, open(path + r'\data.pkl', 'wb'))
