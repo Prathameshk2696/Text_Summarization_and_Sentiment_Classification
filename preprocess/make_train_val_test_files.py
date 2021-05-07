@@ -13,6 +13,7 @@ f_label = open(path + r'\label.txt','r')
 
 val_size = 1000
 test_size = 1000
+train_size = 10000
 
 # val
 f_text_val = open(path + r'\train_val_test_data\val\text_val.txt','w')
@@ -63,12 +64,18 @@ f_summary_train = open(path + r'\train_val_test_data\train\summary_train.txt','w
 f_label_train = open(path + r'\train_val_test_data\train\label_train.txt','w')
 
 for i,line in enumerate(f_text):
+    if(i == train_size):
+        break
     f_text_train.write(line)
 
 for i,line in enumerate(f_summary):
+    if(i == train_size):
+        break
     f_summary_train.write(line)
 
 for i,line in enumerate(f_label):
+    if(i == train_size):
+        break
     f_label_train.write(line)
 
 f_text_train.close()
