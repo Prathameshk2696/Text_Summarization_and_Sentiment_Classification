@@ -15,6 +15,7 @@ import numpy as np
 from preprocess.make_vocab import Dict
 import utils
 
+from preprocess import make_vocab
 from seq2seq import seq2seq
 from optims import Optim
 
@@ -45,7 +46,8 @@ config_dict = {
         "shared_vocab": True,
         "beam_size": 1,
         "unk": True,
-        "use_cuda" : False
+        "use_cuda" : False,
+        "max_split" : 0
     }
 
 class AttrDict(dict):
@@ -137,13 +139,13 @@ def train_model(model, datas, optim, epoch, params):
         targets = tgt[:, 1:]
 
         try:
-            loss, outputs = model(src, lengths, dec, targets, label)
+            loss, outputs = model(src, lengths, dec, targets)
 
             if outputs is not None:
                 pred = outputs.max(2)[1]
                 targets = targets.t()
-                num_correct = pred.data.eq(targets.data).masked_select(targets.ne(utils.PAD).data).sum()
-                num_total = targets.ne(utils.PAD).data.sum()
+                num_correct = pred.data.eq(targets.data).masked_select(targets.ne(make_vocab.PAD).data).sum()
+                num_total = targets.ne(make_vocab.PAD).data.sum()
             else:
                 num_correct = 0
                 num_total = 1
@@ -163,28 +165,18 @@ def train_model(model, datas, optim, epoch, params):
             else:
                 raise e
 
-        utils.progress_bar(params['updates'], config_dict.eval_interval)
         params['updates'] += 1
 
         if params['updates'] % config_dict.eval_interval == 0:
-            params['log']("epoch: %3d, loss: %6.3f, time: %6.3f, updates: %8d, accuracy: %2.2f\n"
-                          % (epoch, params['report_loss'], time.time()-params['report_time'],
-                             params['updates'], params['report_correct'] * 100.0 / params['report_total']))
-            print('evaluating after %d updates...\r' % params['updates'])
             score = eval_model(model, datas, params)
 
             if type(score) == 'dict':
                 for metric in config_dict.metrics:
                     params[metric].append(score[metric])
-                    if score[metric] >= max(params[metric]):
-                        save_model(params['log_path']+'best_'+metric+'_checkpoint.pt', model, optim, params['updates'])
 
             model.train()
             params['report_loss'], params['report_time'] = 0, time.time()
             params['report_correct'], params['report_total'] = 0, 0
-
-        if params['updates'] % config_dict.save_interval == 0:
-            save_model(params['log_path']+'checkpoint.pt', model, optim, params['updates'])
 
     optim.updateLearningRate(score=0, epoch=epoch)
 
@@ -212,7 +204,7 @@ def eval_model(model, datas, params):
             samples, alignment, c_5, c_2 = model.sample(src, src_len, label)
 
         if samples is not None:
-            candidate += [tgt_vocab.convertToLabels(s, utils.EOS) for s in samples]
+            candidate += [tgt_vocab.convertToLabels(s, make_vocab.EOS) for s in samples]
             source += original_src
             reference += original_tgt
 
@@ -222,14 +214,13 @@ def eval_model(model, datas, params):
         count += len(original_src)
         correct_2 += c_2
         correct_5 += c_5
-        utils.progress_bar(count, total_count)
 
     if config_dict.unk and config_dict.attention != 'None' and len(candidate) > 0:
         cands = []
         for s, c, align in zip(source, candidate, alignments):
             cand = []
             for word, idx in zip(c, align):
-                if word == utils.UNK_WORD and idx < len(s):
+                if word == make_vocab.UNK_WORD and idx < len(s):
                     try:
                         cand.append(s[idx])
                     except:
@@ -243,17 +234,6 @@ def eval_model(model, datas, params):
     accuracy_five = correct_5 * 100.0 / total_count
     accuracy_two = correct_2 * 100.0 / total_count
     print("acc = %.2f, %.2f" % (accuracy_five, accuracy_two))
-
-    if len(candidate) > 0:
-        score = {}
-        for metric in config_dict.metrics:
-            try:
-                score[metric] = getattr(utils, metric)(reference, candidate, params['log_path'], params['log'], config)
-            except:
-                score[metric] = 0
-        return score
-    else:
-        return 0
 
 data = load_data()
 model, optim = build_model(config_dict)

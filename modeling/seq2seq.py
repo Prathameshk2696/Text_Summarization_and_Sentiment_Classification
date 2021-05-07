@@ -8,13 +8,14 @@ from preprocess import make_vocab
 from beam import Beam
 
 class seq2seq(nn.Module):
-    def __init__(self, config, use_attention = True, encoder = None, decoder = None):
+    def __init__(self, config, use_attention = False, encoder = None, decoder = None):
         super(seq2seq, self).__init__()
 
         if encoder is not None:
             self.encoder = encoder
         else:
             self.encoder = rnn_encoder(config)
+            
         tgt_embedding = self.encoder.embedding if config.shared_vocab else None
         if decoder is not None:
             self.decoder = decoder
@@ -189,5 +190,5 @@ class seq2seq(nn.Module):
             allScores.append(scores[0])
             allAttn.append(attn[0])
 
-        return allHyps, allAttn# -*- coding: utf-8 -*-
+        return allHyps, allAttn
 
